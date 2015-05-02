@@ -1,11 +1,17 @@
 angular.module('starter.controllers', [])
 
-    .controller('CreateCtrl', function ($scope, Stories, Camera) {
-      var fb = new Firebase('https://storyapp.firebaseio.com/');
+    .controller('CreateCtrl', function ($scope, Stories, Camera, $firebaseObject) {
+      var fbRef = new Firebase('https://storyapp.firebaseio.com/');
+      var firebase = $firebaseObject(fbRef);
+      firebase.$bindTo($scope, 'firebase');
 
-      fb.on('value', function(dataSnapshot) {
-        console.log('data snapshot', dataSnapshot);
-        $scope.lastPic = window.atob(dataSnapshot.val().image);
+      $scope.$watch('firebase', function(newFirebase, oldFirebase){
+        if (newFirebase.image !== oldFirebase.image){
+          var image = new Image();
+          image.src = 'data:image/jpg;base64,' + newFirebase.image;
+          //$scope.lastPic = image;
+          document.body.appendChild(image)
+        }
       });
 
       $scope.storyIsActive = false;
@@ -16,6 +22,30 @@ angular.module('starter.controllers', [])
       $scope.toggleScheduler = function(){
         $scope.showScheduleOptions = !($scope.showScheduleOptions);
       };
+
+      $scope.gpsArr = [];
+
+      var gpsTime = function(){
+// onSuccess Callback
+//   This method accepts a `Position` object, which contains
+//   the current GPS coordinates
+//
+        function onSuccess(position) {
+          gpsArr.push(position);
+        }
+
+// onError Callback receives a PositionError object
+//
+        function onError(error) {
+          alert('code: '+ error.code + '\n' + 'message: ' + error.message + '\n');
+        }
+
+// Options: throw an error if no update is received every 30 seconds.
+//
+        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 30000 });
+      };
+
+      gpsTime();
 
       var schedule = function (start, end, interval) {
 
@@ -84,7 +114,7 @@ angular.module('starter.controllers', [])
 
       $scope.takePhoto = function () {
         Camera.getPicture(cameraOptions).then(function (base64Image) {
-            fb.set({image: base64Image}, onComplete);
+          $scope.firebase.image = base64Image;
         }, function (err) {
           console.err(err);
         });
@@ -108,4 +138,3 @@ angular.module('starter.controllers', [])
         enableFriends: true
       };
     });
-

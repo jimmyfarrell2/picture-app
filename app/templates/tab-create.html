@@ -1,7 +1,7 @@
 <ion-view view-title="Create Story">
   <ion-content class="padding">
 
-    <img src="{{lastPic}}" />
+    <img src="{{lastPic.src}}" />
     <button ng-hide="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Start Now</button>
     <button ng-show="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Schedule</button>
     <p ng-click="toggleScheduler()" ng-hide="showScheduleOptions">Or set future time</p>
