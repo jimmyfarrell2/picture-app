@@ -1,0 +1,30 @@
+{
+    "users" : {
+        "ben" : {
+            "username" : "ben"
+        },
+        "jimmy" : {
+            "username" : "jimmy"
+        }
+    },
+    "albums" : {
+        "23503462908" : {
+            "owner" : "ben",
+            "title" : "My Day at the Beach Alone",
+            "123456" : "crazy string",
+            "234567" : "crazy string 2"
+        },
+        "23509235815" : {
+            "owner" : "jimmy",
+            "title" : "Everybody Loves Me",
+            "567890" : "crazy string",
+            "678901" : "crazy string 2"
+        },
+        "54953602590" : {
+            "owner" : "ben",
+            "title" : "My Day in the City Alone",
+            "345678" : "crazy string",
+            "456789" : "crazy string 2"
+        }
+    }
+}

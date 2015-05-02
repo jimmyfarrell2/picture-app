@@ -1,11 +1,13 @@
 <ion-view view-title="Create Story">
   <ion-content class="padding">
 
-
-    <button ng-hide="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Start Now</button>
+    <div class="list">
+        <label class="item item-input">
+            <input type="text" placeholder="Story Title" ng-model="storyTitle">
+        </label>
+    </div>
+    <button ng-hide="showScheduleOptions" ng-click="startStory(storyTitle)" class="button button-block button-balanced">Start Now</button>
     <button ng-show="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Schedule</button>
-
-    <div id="photospot"></div>
 
     <p ng-click="toggleScheduler()" ng-hide="showScheduleOptions">Or set future time</p>
     <div class="row" ng-show="showScheduleOptions">

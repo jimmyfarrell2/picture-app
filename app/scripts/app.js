@@ -51,7 +51,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       .state('tab.stories', {
         url: '/stories',
         views: {
-          'tab-chats': {
+          'tab-stories': {
             templateUrl: 'templates/tab-stories.html',
             controller: 'StoriesCtrl'
           }
