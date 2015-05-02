@@ -6,12 +6,15 @@ angular.module('starter.controllers', [])
       firebase.$bindTo($scope, 'firebase');
 
       $scope.$watch('firebase', function(newFirebase, oldFirebase){
-        if (newFirebase.image !== oldFirebase.image){
+          console.log('new firebase!!!!!!! ', newFirebase);
+          console.log('old firebase!!!!!!! ', oldFirebase);
           var image = new Image();
           image.src = 'data:image/jpg;base64,' + newFirebase.image;
+          console.log('image after decode!!!!!!', image)
           //$scope.lastPic = image;
-          document.body.appendChild(image)
-        }
+          //document.body.appendChild(image)
+          angular.element(document.querySelector('#photospot')).append(image)
+
       });
 
       $scope.storyIsActive = false;
@@ -25,27 +28,27 @@ angular.module('starter.controllers', [])
 
       $scope.gpsArr = [];
 
-      var gpsTime = function(){
-// onSuccess Callback
-//   This method accepts a `Position` object, which contains
-//   the current GPS coordinates
+//      var gpsTime = function(){
+//// onSuccess Callback
+////   This method accepts a `Position` object, which contains
+////   the current GPS coordinates
+////
+//        function onSuccess(position) {
+//          gpsArr.push(position);
+//        }
 //
-        function onSuccess(position) {
-          gpsArr.push(position);
-        }
-
-// onError Callback receives a PositionError object
+//// onError Callback receives a PositionError object
+////
+//        function onError(error) {
+//          alert('code: '+ error.code + '\n' + 'message: ' + error.message + '\n');
+//        }
 //
-        function onError(error) {
-          alert('code: '+ error.code + '\n' + 'message: ' + error.message + '\n');
-        }
-
-// Options: throw an error if no update is received every 30 seconds.
+//// Options: throw an error if no update is received every 30 seconds.
+////
+//        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 30000 });
+//      };
 //
-        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 30000 });
-      };
-
-      gpsTime();
+//      gpsTime();
 
       var schedule = function (start, end, interval) {
 
