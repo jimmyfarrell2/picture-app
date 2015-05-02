@@ -6,8 +6,6 @@ www
 app/bower_components
 coverage
 platforms
-plugins/*/
-plugins/ios.json
 *.swp
 *.swo
 *.log
