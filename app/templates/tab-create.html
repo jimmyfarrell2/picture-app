@@ -1,0 +1,26 @@
+<ion-view view-title="Create Story">
+  <ion-content class="padding">
+
+    <img src="{{lastPic}}" />
+    <button ng-hide="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Start Now</button>
+    <button ng-show="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Schedule</button>
+    <p ng-click="toggleScheduler()" ng-hide="showScheduleOptions">Or set future time</p>
+    <div class="row" ng-show="showScheduleOptions">
+      <div class="col">
+        <label>Start Time</label>
+        <ionic-timepicker etime="startSlots.epochTime" format="startSlots.format" step="startSlots.step">
+          <button class="button button-calm"><standard-time-meridian etime='startSlots.epochTime'></standard-time-meridian></button>
+        </ionic-timepicker>
+      </div>
+      <div class="col">
+        <label>End Time</label>
+        <ionic-timepicker etime="endSlots.epochTime" format="endSlots.format" step="endSlots.step">
+          <button class="button button-calm"><standard-time-meridian etime='endSlots.epochTime'></standard-time-meridian></button>
+        </ionic-timepicker>
+      </div>
+    </div>
+    <p ng-show="showScheduleOptions" ng-click="toggleScheduler()">Go back</p>
+    <button ng-click="takePhoto()" ng-show="storyIsActive" class="button button-block">Take Photo</button>
+    <button ng-click="endStory()" ng-show="storyIsActive" class="button button-block button-assertive">End Story</button>
+  </ion-content>
+</ion-view>
