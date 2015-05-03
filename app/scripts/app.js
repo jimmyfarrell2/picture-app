@@ -57,6 +57,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
           }
         }
       })
+
+      .state('tab.stories.story-view', {
+          url: '/stories/:storyId',
+            templateUrl: 'templates/tab-story-view.html',
+            controller: 'StoryViewCtrl'
+      })
     //.state('tab.chat-detail', {
     //  url: '/chats/:chatId',
     //  views: {

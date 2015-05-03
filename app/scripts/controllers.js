@@ -14,29 +14,36 @@ angular.module('starter.controllers', [])
         $scope.showScheduleOptions = !($scope.showScheduleOptions);
       };
 
-      $scope.gpsArr = [];
 
-//      var gpsTime = function(){
-//// onSuccess Callback
-////   This method accepts a `Position` object, which contains
-////   the current GPS coordinates
-////
-//        function onSuccess(position) {
-//          gpsArr.push(position);
-//        }
-//
-//// onError Callback receives a PositionError object
-////
-//        function onError(error) {
-//          alert('code: '+ error.code + '\n' + 'message: ' + error.message + '\n');
-//        }
-//
-//// Options: throw an error if no update is received every 30 seconds.
-////
-//        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 30000 });
-//      };
+      var gpsTime = function(){
+ //onSuccess Callback
+   //This method accepts a `Position` object, which contains
+   //the current GPS coordinates
 
-      //gpsTime();
+          console.log('in gpsTime')
+        function onSuccess(position) {
+            console.log('in onSuccess', position.coords.latitude)
+            var key = '';
+            for (var i = 0; i < 20; i++ ) {
+                key += (Math.floor(Math.random() * 10)).toString();
+            }
+            $scope.firebase.albums[$scope.key].waypoints[key] = {
+                lat: position.coords.latitude,
+                long: position.coords.longitude,
+                time: Date.now()
+            };
+        }
+
+ //onError Callback receives a PositionError object
+
+        function onError(error) {
+            console.log('in onError', error)
+          alert('code: '+ error.code + '\n' + 'message: ' + error.message + '\n');
+        }
+
+
+        var watchID = navigator.geolocation.watchPosition(onSuccess, onError);
+      };
 
       var schedule = function (start, end, interval) {
 
@@ -60,10 +67,10 @@ angular.module('starter.controllers', [])
         });
 
         console.log('scheduled!')
-
       };
 
       $scope.startStory = function (storyTitle, start, end, interval) {
+
 
             $scope.key = '';
             for (var i = 0; i < 10; i++ ) {
@@ -76,8 +83,11 @@ angular.module('starter.controllers', [])
           $scope.firebase.albums[$scope.key] = {
               id: $scope.key,
                 owner: "ben",
-                title: storyTitle
+                title: storyTitle,
+                waypoints: {}
           };
+
+          gpsTime();
 
         $scope.storyIsActive = true;
 
@@ -149,7 +159,19 @@ angular.module('starter.controllers', [])
 
     })
 
-    .controller('StoriesCtrl', function ($scope, $firebaseObject) {
+    .controller('StoryViewCtrl', function($scope) {
+        function initialize() {
+            var mapOptions = {
+              center: { lat: -34.397, lng: 150.644},
+              zoom: 8
+            };
+            var map = new google.maps.Map(document.getElementById('map-canvas'),
+                mapOptions);
+          }
+        initialize();
+    })
+
+    .controller('StoriesCtrl', function ($scope, $state, $firebaseObject) {
       var fbRef = new Firebase('https://storyapp.firebaseio.com/');
       var firebase = $firebaseObject(fbRef);
       firebase.$bindTo($scope, 'firebase');
@@ -157,11 +179,12 @@ angular.module('starter.controllers', [])
       $scope.stories = {};
 
       $scope.showStory = function(storyId) {
-        if ($scope.currentStory === storyId){
-          $scope.currentStory = null;
-          return;
-        }
-        $scope.currentStory = storyId;
+        $state.go('tab.stories.story-view', { storyId: storyId })
+        //if ($scope.currentStory === storyId){
+          //$scope.currentStory = null;
+          //return;
+        //}
+        //$scope.currentStory = storyId;
       };
 
       $scope.$watch('firebase.albums', function(newStories, oldStories) {
