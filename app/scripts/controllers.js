@@ -5,18 +5,6 @@ angular.module('starter.controllers', [])
       var firebase = $firebaseObject(fbRef);
       firebase.$bindTo($scope, 'firebase');
 
-      //$scope.$watch('firebase', function(newFirebase, oldFirebase){
-          //console.log('new firebase!!!!!!! ', newFirebase);
-          //console.log('old firebase!!!!!!! ', oldFirebase);
-          //var image = new Image();
-          //image.src = 'data:image/jpg;base64,' + newFirebase.image;
-          //console.log('image after decode!!!!!!', image)
-          ////$scope.lastPic = image;
-          ////document.body.appendChild(image)
-          ////angular.element(document.querySelector('#photospot')).append(image)
-
-      //});
-
       $scope.storyIsActive = false;
 
       $scope.startSlots = {epochTime: 12600, format: 12, step: 15};
@@ -47,8 +35,8 @@ angular.module('starter.controllers', [])
 ////
 //        var watchID = navigator.geolocation.watchPosition(onSuccess, onError, { timeout: 30000 });
 //      };
-//
-//      gpsTime();
+
+      //gpsTime();
 
       //var schedule = function (start, end, interval) {
 
@@ -129,7 +117,22 @@ angular.module('starter.controllers', [])
         saveToPhotoAlbum: false
       };
 
+    var coordinates = {};
+
+    var getLocation = function(){
+      navigator.geolocation.getCurrentPosition( function(position){
+        console.log('POSTITION', position.coords.latitude)
+        coordinates = {
+            lat: position.coords.latitude,
+            long: position.coords.longitude
+          };
+      });
+    };
+
       $scope.takePhoto = function () {
+
+        getLocation();
+
         Camera.getPicture(cameraOptions).then(function (base64Image) {
             var key = '';
             for (var i = 0; i < 6; i++ ) {
@@ -138,7 +141,10 @@ angular.module('starter.controllers', [])
             if (!$scope.firebase.albums[$scope.key].pictures) {
                 $scope.firebase.albums[$scope.key].pictures = {};
             }
-          $scope.firebase.albums[$scope.key].pictures[key] = base64Image;
+          $scope.firebase.albums[$scope.key].pictures[key] = {
+            image: base64Image,
+            coordinates: coordinates
+          };
         }, function (err) {
           console.err(err);
         });
@@ -154,18 +160,19 @@ angular.module('starter.controllers', [])
       $scope.stories = {};
 
       $scope.showStory = function(storyId) {
+        if ($scope.currentStory === storyId){
+          $scope.currentStory = null;
+          return;
+        }
         $scope.currentStory = storyId;
       };
 
       $scope.$watch('firebase.albums', function(newStories, oldStories) {
           angular.forEach(newStories, function(storyInfo, storyId) {
-              console.log('storyInfo.owner', storyInfo.owner);
               if (storyInfo.owner === 'ben') {
-                  console.log('in if, Ruffalo', storyInfo);
                   $scope.stories[storyId] = storyInfo;
               }
           });
-          console.log('$scope.stories', $scope.stories);
       });
     })
 
