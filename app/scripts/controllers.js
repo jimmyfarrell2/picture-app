@@ -38,32 +38,32 @@ angular.module('starter.controllers', [])
 
       //gpsTime();
 
-      //var schedule = function (start, end, interval) {
+      var schedule = function (start, end, interval) {
 
-        //if (!start) {
-          //start = new Date().getTime();
-        //}
+        if (!start) {
+          start = new Date().getTime();
+        }
 
-        //if (!interval) {
+        if (!interval) {
+            interval = 10000;
           //interval = 1200000;
-        //} else {
-          //interval = interval * 60000;
-        //}
+        } else {
+          interval = interval * 60000;
+        }
 
-        //var nudge = new Date(start + interval);
-        //console.log('duh');
+        var nudge = new Date(start + interval);
 
-        //cordova.plugins.notification.local.schedule({
-          //at: nudge,
-          //badge: 1,
-          //text: 'Picture Time!'
-        //});
+        cordova.plugins.notification.local.schedule({
+          at: nudge,
+          badge: 1,
+          text: 'Picture Time!'
+        });
 
-        //console.log('scheduled!')
+        console.log('scheduled!')
 
-      //};
+      };
 
-      $scope.startStory = function (storyTitle, end, interval) {
+      $scope.startStory = function (storyTitle, start, end, interval) {
 
             $scope.key = '';
             for (var i = 0; i < 10; i++ ) {
@@ -81,7 +81,7 @@ angular.module('starter.controllers', [])
 
         $scope.storyIsActive = true;
 
-        //schedule(start, end, interval);
+        schedule(start, end, interval);
 
 
         //Stories.startStory(start, end).then(function (data) {
@@ -91,11 +91,7 @@ angular.module('starter.controllers', [])
       };
 
       $scope.endStory = function () {
-        Stories.endStory().then(function (data) {
-          console.log('Story has ended.');
-          console.log('data', data);
           $scope.storyIsActive = false;
-        });
       };
 
       var onComplete = function(error) {
@@ -145,6 +141,7 @@ angular.module('starter.controllers', [])
             image: base64Image,
             coordinates: coordinates
           };
+          schedule();
         }, function (err) {
           console.err(err);
         });
