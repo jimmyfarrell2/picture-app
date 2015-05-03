@@ -1,15 +1,15 @@
 <ion-view view-title="Create Story">
   <ion-content class="padding">
 
-    <div class="list">
+    <div ng-show="!storyIsActive" class="list">
         <label class="item item-input">
             <input type="text" placeholder="Story Title" ng-model="storyTitle">
         </label>
     </div>
-    <button ng-hide="showScheduleOptions" ng-click="startStory(storyTitle)" class="button button-block button-balanced">Start Now</button>
+    <button ng-hide="showScheduleOptions" ng-show="!storyIsActive" ng-click="startStory(storyTitle)" class="button button-block button-balanced">Start Now</button>
     <button ng-show="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Schedule</button>
 
-    <p ng-click="toggleScheduler()" ng-hide="showScheduleOptions">Or set future time</p>
+    <p ng-click="toggleScheduler()" ng-show="!storyIsActive"><span ng-show="!showScheduleOptions">Or set future time</span><span ng-show="showScheduleOptions">Hide Schedule Options</span></p>
     <div class="row" ng-show="showScheduleOptions">
       <div class="col">
         <label>Start Time</label>
@@ -24,7 +24,6 @@
         </ionic-timepicker>
       </div>
     </div>
-    <p ng-show="showScheduleOptions" ng-click="toggleScheduler()">Go back</p>
     <button ng-click="takePhoto()" ng-show="storyIsActive" class="button button-block">Take Photo</button>
     <button ng-click="endStory()" ng-show="storyIsActive" class="button button-block button-assertive">End Story</button>
   </ion-content>
