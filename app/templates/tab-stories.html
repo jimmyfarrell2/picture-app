@@ -3,7 +3,7 @@
   <div ng-repeat="story in stories">
         <h2 ng-click="showStory(story.id)">{{ story.title }}</h2>
         <div ng-if="currentStory === story.id" ng-repeat="picture in story.pictures">
-            <img src="data:image/jpg;base64,{{ picture }}">
+            <img src="data:image/jpg;base64,{{ picture.image }}">
         </div>
     </div>
   </ion-content>

@@ -13,6 +13,14 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"Camera\"><param name=\"ios-package\" value=\"CDVCamera\" /></feature>",
                             "count": 1
                         },
@@ -29,10 +37,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Geolocation\"><param name=\"ios-package\" value=\"CDVLocation\" /></feature>",
                             "count": 1
                         },
@@ -42,10 +46,6 @@
                         },
                         {
                             "xml": "<feature name=\"Vibration\"><param name=\"ios-package\" value=\"CDVVibration\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -119,6 +119,9 @@
         "com.ionic.keyboard": {
             "PACKAGE_NAME": "com.example.PictureApp"
         },
+        "de.appplant.cordova.plugin.local-notification": {
+            "PACKAGE_NAME": "com.example.PictureApp"
+        },
         "org.apache.cordova.camera": {
             "PACKAGE_NAME": "com.example.PictureApp"
         },
@@ -126,9 +129,6 @@
             "PACKAGE_NAME": "com.example.PictureApp"
         },
         "org.apache.cordova.contacts": {
-            "PACKAGE_NAME": "com.example.PictureApp"
-        },
-        "org.apache.cordova.device": {
             "PACKAGE_NAME": "com.example.PictureApp"
         },
         "org.apache.cordova.geolocation": {
@@ -139,10 +139,11 @@
         },
         "org.apache.cordova.vibration": {
             "PACKAGE_NAME": "com.example.PictureApp"
-        },
-        "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "com.example.PictureApp"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "org.apache.cordova.device": {
+            "PACKAGE_NAME": "com.example.PictureApp"
+        }
+    }
 }
