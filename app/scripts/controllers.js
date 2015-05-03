@@ -149,7 +149,8 @@ angular.module('starter.controllers', [])
             }
           $scope.firebase.albums[$scope.key].pictures[key] = {
             image: base64Image,
-            coordinates: coordinates
+            coordinates: coordinates,
+            time: Date.now()
           };
           schedule();
         }, function (err) {
@@ -159,7 +160,29 @@ angular.module('starter.controllers', [])
 
     })
 
-  .controller('MapsCtrl', function($scope, $ionicLoading) {
+  .controller('MapsCtrl', function($scope, $stateParams, $ionicLoading, $firebaseObject) {
+      var fbRef = new Firebase('https://storyapp.firebaseio.com/');
+      var firebase = $firebaseObject(fbRef);
+      firebase.$bindTo($scope, 'firebase');
+      var storyId = $stateParams.storyId;
+
+        var markers = [];
+        function addMarker(location) {
+          var marker = new google.maps.Marker({
+            position: location,
+              map: map,
+              icon: 'images/blue-dot.png'
+          });
+          markers.push(marker);
+        }
+        function setAllMap(map) {
+          for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+          }
+        }
+        function clearMarkers() {
+          setAllMap(null);
+        }
 
       var myLatlng = new google.maps.LatLng(37.3000, -120.4833);
 
@@ -181,6 +204,24 @@ angular.module('starter.controllers', [])
       });
 
       $scope.map = map;
+
+
+        angular.forEach($scope.firebase.albums[storyId].waypoints, function(waypointInfo, waypointId) {
+            var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
+            addMarker(pos);
+        });
+
+      var currentWaypoints = [];
+      $scope.$watch('firebase.albums[storyId].waypoints', function(newWaypoints, oldWaypoints) {
+          console.log('waypoints')
+        angular.forEach(newWaypoints, function(waypointInfo, waypointId) {
+            console.log('forEach')
+            if (!oldWaypoints[waypointId]) {
+                var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
+                addMarker(pos);
+            }
+        });
+      });
   })
 
     .controller('StoryViewCtrl', function($scope, $ionicLoading) {
