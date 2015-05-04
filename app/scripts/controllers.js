@@ -7,6 +7,15 @@ angular.module('starter.controllers', [])
 
     $scope.storyIsActive = false;
 
+    document.addEventListener("resume", appResumed, false);
+    document.addEventListener("deviceready", deviceReady, false);
+    function appResumed() {
+        cordova.plugins.notification.local.cancelAll();
+    }
+    function deviceReady() {
+        cordova.plugins.notification.local.cancelAll();
+    }
+
     $scope.startSlots = {epochTime: 12600, format: 12, step: 15};
     $scope.endSlots = {epochTime: 12600, format: 12, step: 15};
 
@@ -57,6 +66,7 @@ angular.module('starter.controllers', [])
       var nudge = new Date(start + interval);
 
       cordova.plugins.notification.local.schedule({
+        id: 1,
         at: nudge,
         badge: 1,
         text: 'Picture Time!'
@@ -99,7 +109,7 @@ angular.module('starter.controllers', [])
       $scope.storyIsActive = false;
       navigator.geolocation.clearWatch(watchID);
       cordova.plugins.notification.local.cancelAll();
-      $scope.storyTitle = '';
+      $scope.storyTitle = null;
     };
 
     var onComplete = function (error) {
