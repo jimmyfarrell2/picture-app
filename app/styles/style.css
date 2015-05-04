@@ -15,8 +15,8 @@
     /*padding: 0;*/
 /*}*/
 
-.scroll-content {
-  background: url('http://www.centralpark.com/usr/photos/large/71/central-park-early-morning.jpg') no-repeat center center fixed;
+.create-background {
+  background: url('../images/beach.png') no-repeat center center fixed;
 }
 
 .scroll {

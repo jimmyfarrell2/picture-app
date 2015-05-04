@@ -48,7 +48,7 @@ angular.module('starter.controllers', [])
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
       }
 
-      watchID = navigator.geolocation.watchPosition(onSuccess, onError, { enableHighAccuracy: true });
+      watchID = navigator.geolocation.watchPosition(onSuccess, onError);
     };
 
     var schedule = function (start, end, interval) {

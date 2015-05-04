@@ -1,8 +1,12 @@
 <ion-view view-title="Stories">
   <ion-content>
-    <div ng-repeat="story in stories">
-        <h2 ng-click="showStory(story.id)">{{ story.title }}</h2>
+
+    <div class="list">
+      <div ng-repeat="story in stories">
+        <li class="item" ng-click="showStory(story.id)"><h2>{{ story.title }}</h2></li>
+      </div>
     </div>
+
     <ui-view></ui-view>
   </ion-content>
 </ion-view>
