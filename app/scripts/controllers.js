@@ -14,7 +14,7 @@ angular.module('starter.controllers', [])
       $scope.showScheduleOptions = !($scope.showScheduleOptions);
     };
 
-
+    var watchID;
     var gpsTime = function () {
       //onSuccess Callback
       //This method accepts a `Position` object, which contains
@@ -38,7 +38,7 @@ angular.module('starter.controllers', [])
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
       }
 
-      var watchID = navigator.geolocation.watchPosition(onSuccess, onError);
+      watchID = navigator.geolocation.watchPosition(onSuccess, onError);
     };
 
     var schedule = function (start, end, interval) {
@@ -97,6 +97,9 @@ angular.module('starter.controllers', [])
 
     $scope.endStory = function () {
       $scope.storyIsActive = false;
+      navigator.geolocation.clearWatch(watchID);
+      cordova.plugins.notification.local.cancelAll();
+      $scope.storyTitle = '';
     };
 
     var onComplete = function (error) {
