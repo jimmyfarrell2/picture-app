@@ -7,6 +7,15 @@ angular.module('starter.controllers', [])
 
     $scope.storyIsActive = false;
 
+    document.addEventListener("resume", appResumed, false);
+    document.addEventListener("deviceready", deviceReady, false);
+    function appResumed() {
+        cordova.plugins.notification.local.cancelAll();
+    }
+    function deviceReady() {
+        cordova.plugins.notification.local.cancelAll();
+    }
+
     $scope.startSlots = {epochTime: 12600, format: 12, step: 15};
     $scope.endSlots = {epochTime: 12600, format: 12, step: 15};
 
@@ -14,15 +23,13 @@ angular.module('starter.controllers', [])
       $scope.showScheduleOptions = !($scope.showScheduleOptions);
     };
 
-
+    var watchID;
     var gpsTime = function () {
       //onSuccess Callback
       //This method accepts a `Position` object, which contains
       //the current GPS coordinates
 
-      console.log('in gpsTime')
       function onSuccess(position) {
-        console.log('in onSuccess', position.coords.latitude)
         var key = '';
         for (var i = 0; i < 20; i++) {
           key += (Math.floor(Math.random() * 10)).toString();
@@ -37,12 +44,10 @@ angular.module('starter.controllers', [])
       //onError Callback receives a PositionError object
 
       function onError(error) {
-        console.log('in onError', error)
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
       }
 
-
-      var watchID = navigator.geolocation.watchPosition(onSuccess, onError);
+      watchID = navigator.geolocation.watchPosition(onSuccess, onError);
     };
 
     var schedule = function (start, end, interval) {
@@ -61,12 +66,12 @@ angular.module('starter.controllers', [])
       var nudge = new Date(start + interval);
 
       cordova.plugins.notification.local.schedule({
+        id: 1,
         at: nudge,
         badge: 1,
         text: 'Picture Time!'
       });
 
-      console.log('scheduled!')
     };
 
     $scope.startStory = function (storyTitle, start, end, interval) {
@@ -102,6 +107,9 @@ angular.module('starter.controllers', [])
 
     $scope.endStory = function () {
       $scope.storyIsActive = false;
+      navigator.geolocation.clearWatch(watchID);
+      cordova.plugins.notification.local.cancelAll();
+      $scope.storyTitle = null;
     };
 
     var onComplete = function (error) {
@@ -127,7 +135,6 @@ angular.module('starter.controllers', [])
 
     var getLocation = function () {
       navigator.geolocation.getCurrentPosition(function (position) {
-        console.log('POSTITION', position.coords.latitude)
         coordinates = {
           lat: position.coords.latitude,
           long: position.coords.longitude
@@ -197,23 +204,45 @@ angular.module('starter.controllers', [])
 
     var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-    });
-
     $scope.map = map;
 
-
+    var pathCoordinates = [];
     angular.forEach($scope.firebase.albums[storyId].waypoints, function (waypointInfo, waypointId) {
-      var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
-      addMarker(pos);
+      pathCoordinates.push(waypointInfo);
+      //addMarker(pos);
     });
+    pathCoordinates.sort(function(a, b) {
+        if (a.time < b.time) {
+            return -1;
+        }
+        else if (a.time > b.time) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    });
+    pathCoordinates = pathCoordinates.map(function (waypoint) {
+      return new google.maps.LatLng(waypoint.lat, waypoint.long);
+    });
+    var flightPath = new google.maps.Polyline({
+        path: pathCoordinates,
+        geodesic: true,
+        strokeColor: '#0000FF',
+        strokeOpacity: 1.0,
+        strokeWeight: 4
+    });
+
+    flightPath.setMap(map);
+
+    map.setCenter(pathCoordinates[0]);
 
     var infowindow = new google.maps.InfoWindow();
 
     angular.forEach($scope.firebase.albums[storyId].pictures, function (pictureInfo, pictureId) {
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng(pictureInfo.coordinates.lat, pictureInfo.coordinates.long),
+        icon: 'images/photo.png',
         map: map
       });
 
@@ -226,17 +255,14 @@ angular.module('starter.controllers', [])
       })())
     });
 
-    var currentWaypoints = [];
-    $scope.$watch('firebase.albums[storyId].waypoints', function (newWaypoints, oldWaypoints) {
-      console.log('waypoints')
-      angular.forEach(newWaypoints, function (waypointInfo, waypointId) {
-        console.log('forEach')
-        if (!oldWaypoints[waypointId]) {
-          var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
-          addMarker(pos);
-        }
-      });
-    });
+    //$scope.$watch('firebase.albums[storyId].waypoints', function (newWaypoints, oldWaypoints) {
+      //angular.forEach(newWaypoints, function (waypointInfo, waypointId) {
+        //if (!oldWaypoints[waypointId]) {
+          //var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
+          //addMarker(pos);
+        //}
+      //});
+    //});
   })
 
   .controller('StoryViewCtrl', function ($scope, $ionicLoading) {
