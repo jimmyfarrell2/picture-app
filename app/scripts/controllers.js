@@ -20,9 +20,7 @@ angular.module('starter.controllers', [])
       //This method accepts a `Position` object, which contains
       //the current GPS coordinates
 
-      console.log('in gpsTime')
       function onSuccess(position) {
-        console.log('in onSuccess', position.coords.latitude)
         var key = '';
         for (var i = 0; i < 20; i++) {
           key += (Math.floor(Math.random() * 10)).toString();
@@ -37,10 +35,8 @@ angular.module('starter.controllers', [])
       //onError Callback receives a PositionError object
 
       function onError(error) {
-        console.log('in onError', error)
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
       }
-
 
       var watchID = navigator.geolocation.watchPosition(onSuccess, onError);
     };
@@ -66,7 +62,6 @@ angular.module('starter.controllers', [])
         text: 'Picture Time!'
       });
 
-      console.log('scheduled!')
     };
 
     $scope.startStory = function (storyTitle, start, end, interval) {
@@ -127,7 +122,6 @@ angular.module('starter.controllers', [])
 
     var getLocation = function () {
       navigator.geolocation.getCurrentPosition(function (position) {
-        console.log('POSTITION', position.coords.latitude)
         coordinates = {
           lat: position.coords.latitude,
           long: position.coords.longitude
@@ -197,17 +191,38 @@ angular.module('starter.controllers', [])
 
     var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-    });
-
     $scope.map = map;
 
-
+    var pathCoordinates = [];
     angular.forEach($scope.firebase.albums[storyId].waypoints, function (waypointInfo, waypointId) {
-      var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
-      addMarker(pos);
+      pathCoordinates.push(waypointInfo);
+      //addMarker(pos);
     });
+    pathCoordinates.sort(function(a, b) {
+        if (a.time < b.time) {
+            return -1;
+        }
+        else if (a.time > b.time) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    });
+    pathCoordinates = pathCoordinates.map(function (waypoint) {
+      return new google.maps.LatLng(waypoint.lat, waypoint.long);
+    });
+    var flightPath = new google.maps.Polyline({
+        path: pathCoordinates,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
+
+    flightPath.setMap(map);
+
+    map.setCenter(pathCoordinates[0]);
 
     var infowindow = new google.maps.InfoWindow();
 
@@ -226,17 +241,14 @@ angular.module('starter.controllers', [])
       })())
     });
 
-    var currentWaypoints = [];
-    $scope.$watch('firebase.albums[storyId].waypoints', function (newWaypoints, oldWaypoints) {
-      console.log('waypoints')
-      angular.forEach(newWaypoints, function (waypointInfo, waypointId) {
-        console.log('forEach')
-        if (!oldWaypoints[waypointId]) {
-          var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
-          addMarker(pos);
-        }
-      });
-    });
+    //$scope.$watch('firebase.albums[storyId].waypoints', function (newWaypoints, oldWaypoints) {
+      //angular.forEach(newWaypoints, function (waypointInfo, waypointId) {
+        //if (!oldWaypoints[waypointId]) {
+          //var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
+          //addMarker(pos);
+        //}
+      //});
+    //});
   })
 
   .controller('StoryViewCtrl', function ($scope, $ionicLoading) {
