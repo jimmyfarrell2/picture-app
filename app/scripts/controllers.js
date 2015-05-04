@@ -215,9 +215,9 @@ angular.module('starter.controllers', [])
     var flightPath = new google.maps.Polyline({
         path: pathCoordinates,
         geodesic: true,
-        strokeColor: '#FF0000',
+        strokeColor: '#0000FF',
         strokeOpacity: 1.0,
-        strokeWeight: 2
+        strokeWeight: 4
     });
 
     flightPath.setMap(map);
@@ -229,6 +229,7 @@ angular.module('starter.controllers', [])
     angular.forEach($scope.firebase.albums[storyId].pictures, function (pictureInfo, pictureId) {
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng(pictureInfo.coordinates.lat, pictureInfo.coordinates.long),
+        icon: 'images/photo.png',
         map: map
       });
 
