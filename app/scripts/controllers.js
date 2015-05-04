@@ -7,6 +7,15 @@ angular.module('starter.controllers', [])
 
     $scope.storyIsActive = false;
 
+    document.addEventListener("resume", appResumed, false);
+    document.addEventListener("deviceready", deviceReady, false);
+    function appResumed() {
+        cordova.plugins.notification.local.cancelAll();
+    }
+    function deviceReady() {
+        cordova.plugins.notification.local.cancelAll();
+    }
+
     $scope.startSlots = {epochTime: 12600, format: 12, step: 15};
     $scope.endSlots = {epochTime: 12600, format: 12, step: 15};
 
@@ -14,7 +23,7 @@ angular.module('starter.controllers', [])
       $scope.showScheduleOptions = !($scope.showScheduleOptions);
     };
 
-
+    var watchID;
     var gpsTime = function () {
       //onSuccess Callback
       //This method accepts a `Position` object, which contains
@@ -38,7 +47,7 @@ angular.module('starter.controllers', [])
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
       }
 
-      var watchID = navigator.geolocation.watchPosition(onSuccess, onError);
+      watchID = navigator.geolocation.watchPosition(onSuccess, onError);
     };
 
     var schedule = function (start, end, interval) {
@@ -57,6 +66,7 @@ angular.module('starter.controllers', [])
       var nudge = new Date(start + interval);
 
       cordova.plugins.notification.local.schedule({
+        id: 1,
         at: nudge,
         badge: 1,
         text: 'Picture Time!'
@@ -97,6 +107,9 @@ angular.module('starter.controllers', [])
 
     $scope.endStory = function () {
       $scope.storyIsActive = false;
+      navigator.geolocation.clearWatch(watchID);
+      cordova.plugins.notification.local.cancelAll();
+      $scope.storyTitle = null;
     };
 
     var onComplete = function (error) {
