@@ -5,6 +5,7 @@ angular.module('starter.controllers', [])
     var firebase = $firebaseObject(fbRef);
     firebase.$bindTo($scope, 'firebase');
 
+    $scope.scope = {};
     $scope.storyIsActive = false;
 
     document.addEventListener("resume", appResumed, false);
@@ -47,7 +48,7 @@ angular.module('starter.controllers', [])
         alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
       }
 
-      watchID = navigator.geolocation.watchPosition(onSuccess, onError);
+      watchID = navigator.geolocation.watchPosition(onSuccess, onError, { enableHighAccuracy: true });
     };
 
     var schedule = function (start, end, interval) {
@@ -98,18 +99,13 @@ angular.module('starter.controllers', [])
 
       schedule(start, end, interval);
 
-
-      //Stories.startStory(start, end).then(function (data) {
-      //console.log('Story has started.');
-      //console.log('data', data);
-      //});
     };
 
     $scope.endStory = function () {
       $scope.storyIsActive = false;
       navigator.geolocation.clearWatch(watchID);
       cordova.plugins.notification.local.cancelAll();
-      $scope.storyTitle = null;
+      $scope.scope.storyTitle = null;
     };
 
     var onComplete = function (error) {
@@ -142,29 +138,36 @@ angular.module('starter.controllers', [])
       });
     };
 
-    $scope.takePhoto = function () {
+    $scope.takePhoto = function(){
 
       getLocation();
 
       Camera.getPicture(cameraOptions).then(function (base64Image) {
-        var key = '';
-        for (var i = 0; i < 6; i++) {
-          key += (Math.floor(Math.random() * 10)).toString();
-        }
-        if (!$scope.firebase.albums[$scope.key].pictures) {
-          $scope.firebase.albums[$scope.key].pictures = {};
-        }
-        $scope.firebase.albums[$scope.key].pictures[key] = {
-          image: base64Image,
-          coordinates: coordinates,
-          time: Date.now()
-        };
-        schedule();
+        $scope.previewPhoto =  base64Image;
       }, function (err) {
         console.err(err);
       });
     };
 
+    $scope.savePhoto = function(caption){
+      var key = '';
+      for (var i = 0; i < 6; i++) {
+        key += (Math.floor(Math.random() * 10)).toString();
+      }
+
+      if (!$scope.firebase.albums[$scope.key].pictures) {
+        $scope.firebase.albums[$scope.key].pictures = {};
+      }
+      $scope.firebase.albums[$scope.key].pictures[key] = {
+        image: $scope.previewPhoto,
+        coordinates: coordinates,
+        caption: caption,
+        time: Date.now()
+      };
+      $scope.previewPhoto = null;
+      $scope.scope.caption = null;
+      schedule();
+    }
   })
 
   .controller('MapsCtrl', function ($scope, $stateParams, $ionicLoading, $firebaseObject) {
@@ -248,34 +251,16 @@ angular.module('starter.controllers', [])
 
       google.maps.event.addListener(marker, 'click', (function () {
         return function () {
-          var image = '<img src="data:image/jpg;base64,' + pictureInfo.image + '">';
+          var image = '<img src="data:image/jpg;base64,' + pictureInfo.image + '"><br/><p>'+pictureInfo.caption+'</p>';
           infowindow.setContent(image);
           infowindow.open(map, marker);
         }
       })())
     });
-
-    //$scope.$watch('firebase.albums[storyId].waypoints', function (newWaypoints, oldWaypoints) {
-      //angular.forEach(newWaypoints, function (waypointInfo, waypointId) {
-        //if (!oldWaypoints[waypointId]) {
-          //var pos = new google.maps.LatLng(waypointInfo.lat, waypointInfo.long);
-          //addMarker(pos);
-        //}
-      //});
-    //});
   })
 
   .controller('StoryViewCtrl', function ($scope, $ionicLoading) {
 
-    //function initialize() {
-    //    var mapOptions = {
-    //      center: { lat: -34.397, lng: 150.644},
-    //      zoom: 8
-    //    };
-    //    var map = new google.maps.Map(document.getElementById('map-canvas'),
-    //        mapOptions);
-    //  }
-    //initialize();
   })
 
   .controller('StoriesCtrl', function ($scope, $state, $firebaseObject) {
@@ -286,12 +271,7 @@ angular.module('starter.controllers', [])
     $scope.stories = {};
 
     $scope.showStory = function (storyId) {
-      $state.go('tab.stories.story-view', {storyId: storyId})
-      //if ($scope.currentStory === storyId){
-      //$scope.currentStory = null;
-      //return;
-      //}
-      //$scope.currentStory = storyId;
+      $state.go('tab.stories.story-view', {storyId: storyId});
     };
 
     $scope.$watch('firebase.albums', function (newStories, oldStories) {
@@ -302,10 +282,6 @@ angular.module('starter.controllers', [])
       });
     });
   })
-
-//.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-//  $scope.chat = Chats.get($stateParams.chatId);
-//})
 
   .controller('AccountCtrl', function ($scope) {
     $scope.settings = {

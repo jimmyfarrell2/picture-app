@@ -5,10 +5,14 @@
         <div class="item item-text-wrap">
           <div ng-show="!storyIsActive" class="list">
             <label class="item item-input">
-              <input type="text" placeholder="Story Title" ng-model="storyTitle">
+              <input type="text" placeholder="Story Title" ng-model="scope.storyTitle">
             </label>
           </div>
-          <button ng-hide="showScheduleOptions" ng-show="!storyIsActive" ng-click="startStory(storyTitle)" class="button button-block button-balanced">Start Now</button>
+          <img ng-show="previewPhoto" src="data:image/jpg;base64,{{previewPhoto}}">
+          <label ng-show="previewPhoto" class="item item-input">
+            <input type="text" placeholder="Caption" ng-model="scope.caption">
+          </label>
+          <button ng-hide="showScheduleOptions" ng-show="!storyIsActive" ng-click="startStory(scope.storyTitle)" class="button button-block button-balanced">Start Now</button>
           <button ng-show="showScheduleOptions" ng-click="startStory()" class="button button-block button-balanced">Schedule</button>
           <p ng-click="toggleScheduler()" ng-show="!storyIsActive"><span ng-show="!showScheduleOptions">Or set future time</span><span ng-show="showScheduleOptions">Hide Schedule Options</span></p>
           <div class="row" ng-show="showScheduleOptions">
@@ -25,7 +29,8 @@
               </ionic-timepicker>
             </div>
           </div>
-          <button ng-click="takePhoto()" ng-show="storyIsActive" class="button button-block">Take Photo</button>
+          <button ng-click="takePhoto()" ng-show="storyIsActive && !previewPhoto" class="button button-block">Take Photo</button>
+          <button ng-click="savePhoto(scope.caption)" ng-show="previewPhoto && storyIsActive" class="button button-block">Save</button>
           <button ng-click="endStory()" ng-show="storyIsActive" class="button button-block button-assertive">End Story</button>
         </div>
       </div>
